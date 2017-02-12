@@ -1,29 +1,30 @@
 <?php
+
 /** **********************************************************************************
  * Generates a completely random user agent based upon operating system/version and browser/version.
- *    Supported OS:       Windows, Linux, Mac OS, iOS, Android, and Windows Phone
- *    Supported Browsers: Firefox, Chrome, Opera, Safari
+ *    Supported OS:       Windows, Linux, Mac, and Android - Windows Phone coming soon
+ *    Supported Browsers: Firefox, Chrome, Safari
  */
 class userAgent {
    /**
     * Windows Operating System list with dynamic versioning
     */
    public $windows_os = [
-     '[Windows; |Windows; U; |]Windows NT 6.:number0-3:;[ Win64; x64;| WOW64;| x64;|]',
-     '[Windows; |Windows; U; |]Windows NT 10.0;[ Win64; x64;| WOW64;| x64;|]',
+     '[Windows; |Windows; U; |]Windows NT 6.:number0-3:;[ Win64; x64| WOW64| x64|]',
+     '[Windows; |Windows; U; |]Windows NT 10.0;[ Win64; x64| WOW64| x64|]',
    ];
    /**
     * Linux Operating Systems [limited]
     */
    public $linux_os = [
-     'Linux x86_64',
-     'Linux i686'
+     '[Linux; |][U; |]Linux x86_64',
+     '[Linux; |][U; |]Linux i:number5-6::number4-8::number0-6: [x86_64|]'
    ];
    /**
     * Mac Operating System (OS X) with dynamic versioning
     */
    public $mac_os = [
-     'Macintosh; {U; |]Intel Mac OS X :number7-9:_:number0-9:_:number0-9:;',
+     'Macintosh; [U; |]Intel Mac OS X :number7-9:_:number0-9:_:number0-9:',
      'Macintosh; [U; |]Intel Mac OS X 10_:number0-12:_:number0-9:'
    ];//<<start_formatting
    public $androidVersions = ['4.3.1', '4.4', '4.4.1', '4.4.4', '5.0', '5.0.1', '5.0.2', '5.1', '5.1.1', '6.0', '6.0.1', '7.0', '7.1','7.1.1'];//<<end_formatting
@@ -78,7 +79,7 @@ class userAgent {
        'ALCATEL ONE[| ]TOUCH 70:number2-4::number0-9:[X|D|E|A] Build/KOT49H',
        'MOTOROLA [MOTOG|MSM8960|RAZR] Build/KVT49L'
      ],
-     '5.0' => [  
+     '5.0' => [
        'Nokia :number10-11:00 [wifi|4G|LTE] Build/GRK39F',
        'HTC 80:number1-2[s|w|e|t] Build/[LRX22G|JSS15J]',
        'Lenovo A7000-a Build/LRX21M;',
@@ -125,30 +126,66 @@ class userAgent {
     * List of mobile UA Formats
     */
    
-   public $mobile_os = [
+   public $android_os = [
      'Linux; Android :androidVersion:; :androidDevice:',
      //TODO: Add a $windowsDevices variable that does the same as androidDevice
      //'Windows Phone 10.0; Android :androidVersion:; :windowsDevice:',
      'Linux; U; Android :androidVersion:; :androidDevice:',
      'Android; Android :androidVersion:; :androidDevice:',
+     ];
+   public $mobile_ios = [
      'iPhone; CPU iPhone OS :number7-10:_:number0-12:_:number0-9:; like Mac OS X;',
      'iPad; CPU iPad OS :number7-10:_:number0-12:_:number0-9: like Mac OS X;',
      'iPod; CPU iPod OS :number7-10:_:number0-12:_:number0-9:; like Mac OS X;',
    ];
    public $os;
    
-   public function getOS() {
-      $_os         = $this->os ?? array_merge($this->windows_os, $this->linux_os, $this->mac_os);
+   public function getOS($os=NULL) {
+      if( is_null($os) || in_array($os, ['chrome', 'firefox', 'android', 'iphone', 'ipod','ipad'])) {
+         $_os = $this->os ?? array_merge($this->windows_os, $this->linux_os, $this->mac_os);
+      } else {
+         if(is_array($os)) {
+            $_os = [];
+            if( in_array('windows', $os) ) $_os += $this->windows_os;
+            if( in_array('linux', $os) ) $_os += $this->linux_os;
+            if( in_array('mac', $os) ) $_os += $this->mac_os;
+            
+         } else {
+            $_os = [];
+            if( $os === 'windows' ) $_os += $this->windows_os;
+            if( $os === 'linux' ) $_os += $this->linux_os;
+            if( $os === 'mac' ) $_os += $this->mac_os;
+         }
+      }
       $selected_os = rtrim($_os[random_int(0, count($_os) - 1)], ';');
-      
+   
+      if( strpos($selected_os, '[') !== FALSE ) {
+         $selected_os = self::processSpinSyntax($selected_os);
+      }
       if( strpos($selected_os, ':number') !== FALSE ) {
          $selected_os = self::processRandomNumbers($selected_os);
       }
       return $selected_os;
    }
    
-   public function getMobileOS() {
-      $selected_os = rtrim($this->mobile_os[random_int(0, count($this->mobile_os) - 1)], ';');
+   public function getMobileOS($os = NULL) {
+      if( is_null($os) ) {
+         $_os = $this->os ?? array_merge($this->android_os, $this->mobile_ios);
+      } else {
+         $_os = [];
+         if(is_array($os)) {
+            if( in_array('android', $os) ) $_os += $this->android_os;
+            if( in_array('iphone', $os) ) $_os[] = $this->mobile_ios[0];
+            if( in_array('ipad', $os) ) $_os[] = $this->mobile_ios[1];
+            if( in_array('ipod', $os) ) $_os[] = $this->mobile_ios[2];
+         } else {
+            if( $os === 'android' ) $_os += $this->android_os;
+            if( $os === 'iphone' ) $_os[] = $this->mobile_ios[0];
+            if( $os === 'ipad' ) $_os[] = $this->mobile_ios[1];
+            if( $os === 'ipod' ) $_os[] = $this->mobile_ios[2];
+         }
+      }
+      $selected_os = rtrim($_os[random_int(0, count($_os) - 1)], ';');
       if( strpos($selected_os, ':androidVersion:') !== FALSE ) {
          $selected_os = $this->processAndroidVersion($selected_os);
       }
@@ -170,8 +207,8 @@ class userAgent {
       return preg_replace_callback('/:number(\d+)-(\d+):/i', function( $matches ) { return random_int($matches[1], $matches[2]); }, $selected_os);
    }
    
-   public function processSpinSyntax( $selected_os ) {
-      return preg_replace_callback('/\[([a-z0-9\-\s\|]*?)\]/i', function( $matches ) {
+   public static function processSpinSyntax( $selected_os ) {
+      return preg_replace_callback('/\[([\w\-\s|;]*?)\]/i', function( $matches ) {
          $shuffle = explode('|', $matches[1]);
          return $shuffle[array_rand($shuffle)];
       }, $selected_os);
@@ -186,7 +223,7 @@ class userAgent {
       $devices = $this->androidDevices[substr($this->androidVersion, 0, 3)];
       $device  = $devices[array_rand($devices)];
       
-      $device = $this->processSpinSyntax($device);
+      $device = self::processSpinSyntax($device);
       return preg_replace_callback('/:androidDevice:/i', function( $matches ) use ( $device ) { return $device; }, $selected_os);
    }
    
@@ -207,32 +244,63 @@ class userAgent {
     *    Supported Variables for call: firefox, chrome, mobile, and null is equal to all
     */
    public function generate( $userAgent = NULL ) {
-      if( is_null($userAgent) ) $userAgent = array_rand(['firefox' => 1,'chrome' => 1,'mobile' => 1]);
-      $chrome_version  = ['min' => 47,'max' => 55 ];
-      $firefox_version = [ 'min' => 45,'max' => 51];
+      if( is_null($userAgent) ) $userAgent = array_rand([
+        'firefox' => 1,
+        'chrome' => 1,
+        'explorer' => 1,
+        'iphone'=>1,
+        'android'=>1,
+        'ipad'=>1,
+        'ipod'=>1,
+        'mobile' => 1
+      ]);
+      $chrome_version  = [
+        'min' => 47,
+        'max' => 55
+      ];
+      $firefox_version = [
+        'min' => 45,
+        'max' => 51
+      ];
       //random version from $var['min'] to $var['max']
-      
       
       $chrome_agent  = 'Mozilla/5.0 (:os) AppleWebKit/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(1, 50) . ' (KHTML, like Gecko) Chrome/:version Safari/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603));
       $firefox_agent = 'Mozilla/5.0 (:os) Gecko/' . (random_int(1, 100) > 30 ? '20100101' : '20130401') . ' Firefox/:version';
       $mobile_agent  = 'Mozilla/5.0 (:os) AppleWebKit/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(1, 50) . ' (KHTML, like Gecko)  Chrome/:version Mobile Safari/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(0, 9);
-      $ie_agent      = 'Mozilla / 5.0 (compatible; MSIE ' . random_int(7, 11) . '.0; :os Trident / 6.0)';
+      // TODO: Make correct trident more elegant
+      // IE 7/8 uses Trident 4.0, IE 9 use 5.0, IE 10 use 6.0, IE 11 use 7.0
+      $ie_agent      = 'Mozilla / 5.0 (compatible; MSIE ' . ($int = random_int(7, 11)) . '.0; :os Trident / '.($int==7||$int==8 ? '4' : ($int==9 ? '5':($int==10?'6':'7'))).'.0)';
       $os            = $this->getOS();
       
       if( random_int(1, 100) > 50 ) $os .= '; en-US';
       if( $userAgent == 'chrome' ) {
          return strtr($chrome_agent, [
-           ':os' => $os,
+           ':os' => $this->getOS($userAgent),
            ':version' => self::chromeVersion($chrome_version)
          ]);
       } elseif( $userAgent == 'firefox' ) {
          return strtr($firefox_agent, [
-           ':os' => $os,
+           ':os' => $this->getOS($userAgent),
+           ':version' => self::firefoxVersion($firefox_version)
+         ]);
+      } elseif( $userAgent == 'explorer' ) {
+         return strtr($ie_agent, [
+           ':os' => $this->getOS('windows'),
            ':version' => self::firefoxVersion($firefox_version)
          ]);
       } elseif( $userAgent == 'mobile' ) {
          return strtr($mobile_agent, [
            ':os' => $this->getMobileOS(),
+           ':version' => self::chromeVersion($chrome_version)
+         ]);
+      } elseif( $userAgent == 'android' ) {
+         return strtr($mobile_agent, [
+           ':os' => $this->getMobileOS($userAgent),
+           ':version' => self::chromeVersion($chrome_version)
+         ]);
+      } elseif( $userAgent == 'iphone'||$userAgent== 'ipad' || $userAgent=='ipod' ) {
+         return strtr($mobile_agent, [
+           ':os' => $this->getMobileOS($userAgent),
            ':version' => self::chromeVersion($chrome_version)
          ]);
       } else {
