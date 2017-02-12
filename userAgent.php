@@ -1,9 +1,8 @@
 <?php
-
 /** **********************************************************************************
  * Generates a completely random user agent based upon operating system/version and browser/version.
- *    Supported OS Parameters:       windows, linux, mac, iphone, ipad, ipod and android // TODO: Add Windows Phone
- *    Supported Browser Parameters:  firefox, chrome, explorer (internet explorer)
+ *    Supported OS:       Windows, Linux, Mac, and Android - Windows Phone coming soon
+ *    Supported Browsers: Firefox, Chrome, Safari
  */
 class userAgent {
    /**
@@ -165,25 +164,21 @@ class userAgent {
       if( strpos($selected_os, ':number') !== FALSE ) {
          $selected_os = self::processRandomNumbers($selected_os);
       }
+   
+      if( random_int(1, 100) > 50 ) $selected_os .= '; en-US';
       return $selected_os;
    }
    
    public function getMobileOS($os = NULL) {
-      if( is_null($os) ) {
+      if( is_null($os) || $os == 'mobile') {
          $_os = $this->os ?? array_merge($this->android_os, $this->mobile_ios);
       } else {
          $_os = [];
-         if(is_array($os)) {
-            if( in_array('android', $os) ) $_os += $this->android_os;
-            if( in_array('iphone', $os) ) $_os[] = $this->mobile_ios[0];
-            if( in_array('ipad', $os) ) $_os[] = $this->mobile_ios[1];
-            if( in_array('ipod', $os) ) $_os[] = $this->mobile_ios[2];
-         } else {
             if( $os === 'android' ) $_os += $this->android_os;
             if( $os === 'iphone' ) $_os[] = $this->mobile_ios[0];
             if( $os === 'ipad' ) $_os[] = $this->mobile_ios[1];
             if( $os === 'ipod' ) $_os[] = $this->mobile_ios[2];
-         }
+         
       }
       $selected_os = rtrim($_os[random_int(0, count($_os) - 1)], ';');
       if( strpos($selected_os, ':androidVersion:') !== FALSE ) {
@@ -244,65 +239,31 @@ class userAgent {
     *    Supported Variables for call: firefox, chrome, mobile, and null is equal to all
     */
    public function generate( $userAgent = NULL ) {
-      if( is_null($userAgent) ) $userAgent = array_rand([
-        'firefox' => 1,
-        'chrome' => 1,
-        'explorer' => 1,
-        'iphone'=>1,
-        'android'=>1,
-        'ipad'=>1,
-        'ipod'=>1,
-        'mobile' => 1
-      ]);
-      $chrome_version  = [
-        'min' => 47,
-        'max' => 55
-      ];
-      $firefox_version = [
-        'min' => 45,
-        'max' => 51
-      ];
-      //random version from $var['min'] to $var['max']
-      
-      $chrome_agent  = 'Mozilla/5.0 (:os) AppleWebKit/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(1, 50) . ' (KHTML, like Gecko) Chrome/:version Safari/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603));
-      $firefox_agent = 'Mozilla/5.0 (:os) Gecko/' . (random_int(1, 100) > 30 ? '20100101' : '20130401') . ' Firefox/:version';
-      $mobile_agent  = 'Mozilla/5.0 (:os) AppleWebKit/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(1, 50) . ' (KHTML, like Gecko)  Chrome/:version Mobile Safari/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(0, 9);
-      // TODO: Make correct trident more elegant
-      // IE 7/8 uses Trident 4.0, IE 9 use 5.0, IE 10 use 6.0, IE 11 use 7.0
-      $ie_agent      = 'Mozilla / 5.0 (compatible; MSIE ' . ($int = random_int(7, 11)) . '.0; :os Trident / '.($int==7||$int==8 ? '4' : ($int==9 ? '5':($int==10?'6':'7'))).'.0)';
-      $os            = $this->getOS();
-      
-      if( random_int(1, 100) > 50 ) $os .= '; en-US';
+      if( is_null($userAgent) )  {
+         $r = random_int(0,100);
+         if($r>= 35) {
+            $userAgent = array_rand(['firefox'=>1, 'chrome'=>1, 'explorer'=>1]);
+         } else {
+            $userAgent = array_rand(['iphone' => 1, 'android' => 1, 'mobile' => 1]);
+         }
+      } elseif($userAgent=='windows'||$userAgent=='mac'||$userAgent=='linux') {;
+         $agents = ['firefox'=>1, 'chrome'=>1];
+         if($userAgent=='windows') $agents['explorer'] = 1;
+         $userAgent = array_rand($agents);
+      }
+      $_SESSION['agent'] = $userAgent;
       if( $userAgent == 'chrome' ) {
-         return strtr($chrome_agent, [
-           ':os' => $this->getOS($userAgent),
-           ':version' => self::chromeVersion($chrome_version)
-         ]);
+         
+         return 'Mozilla/5.0 ('. $this->getOS($userAgent).') AppleWebKit/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(1, 50) . ' (KHTML, like Gecko) Chrome/'. self::chromeVersion([ 'min' => 47, 'max' => 55]).' Safari/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603));
       } elseif( $userAgent == 'firefox' ) {
-         return strtr($firefox_agent, [
-           ':os' => $this->getOS($userAgent),
-           ':version' => self::firefoxVersion($firefox_version)
-         ]);
+         
+         return 'Mozilla/5.0 ('.$this->getOS($userAgent).') Gecko/' . (random_int(1, 100) > 30 ? '20100101' : '20130401') . ' Firefox/'.  self::firefoxVersion(['min' => 45, 'max' => 51]);
       } elseif( $userAgent == 'explorer' ) {
-         return strtr($ie_agent, [
-           ':os' => $this->getOS('windows'),
-           ':version' => self::firefoxVersion($firefox_version)
-         ]);
-      } elseif( $userAgent == 'mobile' ) {
-         return strtr($mobile_agent, [
-           ':os' => $this->getMobileOS(),
-           ':version' => self::chromeVersion($chrome_version)
-         ]);
-      } elseif( $userAgent == 'android' ) {
-         return strtr($mobile_agent, [
-           ':os' => $this->getMobileOS($userAgent),
-           ':version' => self::chromeVersion($chrome_version)
-         ]);
-      } elseif( $userAgent == 'iphone'||$userAgent== 'ipad' || $userAgent=='ipod' ) {
-         return strtr($mobile_agent, [
-           ':os' => $this->getMobileOS($userAgent),
-           ':version' => self::chromeVersion($chrome_version)
-         ]);
+         
+         return 'Mozilla / 5.0 (compatible; MSIE ' . ($int = random_int(7, 11)) . '.0; '. $this->getOS('windows').' Trident / ' . ($int == 7 || $int == 8 ? '4' : ($int == 9 ? '5' : ($int == 10 ? '6' : '7'))) . '.0)';
+      } elseif( $userAgent=='mobile'||$userAgent=='android'||$userAgent == 'iphone'||$userAgent== 'ipad' || $userAgent=='ipod' ) {
+   
+         return 'Mozilla/5.0 ('. $this->getMobileOS($userAgent).') AppleWebKit/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(1, 50) . ' (KHTML, like Gecko)  Chrome/' . self::chromeVersion([ 'min' => 47, 'max' => 55]) . ' Mobile Safari/' . (random_int(1, 100) > 50 ? random_int(533, 537) : random_int(600, 603)) . '.' . random_int(0, 9);
       } else {
          new Exception('Unable to determine user agent to generate');
       }
