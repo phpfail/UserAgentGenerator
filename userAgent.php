@@ -2,8 +2,8 @@
 
 /** **********************************************************************************
  * Generates a completely random user agent based upon operating system/version and browser/version.
- *    Supported OS:       Windows, Linux, Mac, and Android - Windows Phone coming soon
- *    Supported Browsers: Firefox, Chrome, Safari
+ *    Supported OS Parameters:       windows, linux, mac, iphone, ipad, ipod and android // TODO: Add Windows Phone
+ *    Supported Browser Parameters:  firefox, chrome, explorer (internet explorer)
  */
 class userAgent {
    /**
