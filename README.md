@@ -39,14 +39,6 @@ $UAiPhone = $agent->generate('iphone'); // generates an iphone user agent for iO
 $UAAndroid = $agent->generate('android'); // generates an android user agent for android versions 4.3-7.1, and includes randomly generated device and build number string that is correct for the version of android being displayed.
 ```
 
-# Example Usage when specifying multiple OS, Browser, or Mobile
-Pass the parameters in an array to specify multiple possilbe UA string types to be generated. 
-
-Example is specifying android and windows which will generate either an android or windows User Agent
-```php
-$agent = new userAgent();
-$UserAgent = $agent->generate(['android', 'windows']);
-```
 ========================================================
 # Customizing User Agent
 You can edit the provided variables of UA strings and add in randomizing properties, the syntax is as follows:
