@@ -27,7 +27,7 @@ $userAgent = (new userAgent) ->generate();
 ```
 
 # Example Usage when specifying a single OS, Browser, or Mobile
-You can specify either `firefox`, `chrome`, `mobile`, `windows`, `mac`, `iphone`, and `android`.
+You can specify either `firefox`, `chrome`, `mobile`, `windows`, `mac`, `iphone`, `ipad`, `ipod`, and `android`.
 ```php
 $agent = new userAgent();
 $UAFireFox = $agent->generate('firefox'); // generates a firefox user agent on either windows or mac
