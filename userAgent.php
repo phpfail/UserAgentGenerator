@@ -193,7 +193,7 @@ class userAgent {
                 $_os[] = $this->mobile_ios[$os];
             break;
             default:
-                $_os = array_merge($this->android_os, $this->mobile_ios);
+                $_os = array_merge($this->android_os, array_values($this->mobile_ios));
         }
         // select random mobile os
         $selected_os = rtrim($_os[random_int(0, count($_os) - 1)], ';');
