@@ -1,5 +1,5 @@
 # PHP Random User Agent Generator
-Written in PHP, this script will generate real User Agent strings with optional capabilities to specify OS, Browser, Mobile, ect. simply by passing a parameter to the function called to generate the User Agent string. Created with the intentions of eliminating footprints while scraping the web for content using cURL because a truly solution to generate a truly random User Agent was not availble.
+Written in PHP, this script will generate real User Agent strings with optional capabilities to specify OS, Browser, Mobile, etc. simply by passing a parameter to the function called to generate the User Agent string. Created with the intentions of eliminating footprints while scraping the web for content using cURL because an easy solution to generate a truly random User Agent was not availble.
 
 __Other Randomly Generated Segments__
 * Version of Android with Device / build number strings, and variations of known UA's for specific devices.
@@ -30,7 +30,7 @@ $userAgent = (new userAgent) ->generate();
 ```
 
 ### Example Usage when specifying a single OS, Browser, or Mobile
-You can specify either `firefox`, `chrome`, `mobile`, `windows`, `mac`, `iphone`, `ipad`, `ipod`, and `android`.
+You can specify either `firefox`, `chrome`, `explorer`, `mobile`, `windows`, `mac`, `iphone`, `ipad`, `ipod`, and `android`.
 ```php
 $agent = new userAgent();
 $UAFireFox = $agent->generate('firefox'); // generates a firefox user agent on either windows or mac
