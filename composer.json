@@ -1,5 +1,5 @@
 {
-  "name": "phpfail/useragentgenerator",
+  "name": "chrisspaghetti/useragentgenerator",
   "description": "Generate a random User Agent based on OS, platform, browser, etc.",
   "keywords": [
     "random",
