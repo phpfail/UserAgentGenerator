@@ -19,7 +19,7 @@ composer require chrisspaghetti/useragentgenerator:dev-master
 # Usage Summary
 1. Initialize the `userAgent` class 
 ..*```php $agent = new userAgent;```
-3. Call the `generate` function to generate a random User Agent string as many times as needed. 
+2. Call the `generate` function to generate a random User Agent string as many times as needed. 
 ..*```php $UAString = $agent->generate();``` 
 
 ### Example Usage 
