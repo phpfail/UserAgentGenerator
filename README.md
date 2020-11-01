@@ -10,6 +10,12 @@ __Other Randomly Generated Segments__
 
 It's also easy to customize with random syntax parsing and random number generating, see `Customizing User Agent` below
 ***
+# Installation 
+For installation with composer run the following command:
+```shell script
+composer require chrisspaghetti/useragentgenerator:dev-master
+```
+***
 # Usage Summary
 1. Require `useragent.php` in the file where the User Agent string will be generated.
 ..*```php require_once __DIR__.'/userAgent.php';```

@@ -1,5 +1,6 @@
 <?php
-require_once (dirname(__FILE__).'/userAgent.php');
+require __DIR__ . '/vendor/autoload.php';
+error_reporting(E_ALL);
 
 echo 'RANDOM 100:'."\n";
 for ($i = 1; $i<= 100; $i++) {

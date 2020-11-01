@@ -22,5 +22,8 @@
   ],
   "require": {
     "php": ">=7.0"
+  },
+  "autoload": {
+    "files": ["userAgent.php"]
   }
 }
