@@ -1,5 +1,5 @@
 # PHP Random User Agent Generator
-Written in PHP, this script will generate real User Agent strings with optional capabilities to specify OS, Browser, Mobile, ect. simply by passing a parameter to the function called to generate the User Agent string. Created with the intentions of eliminating footprints while scraping the web for content using cURL because a truly solution to generate a truly random User Agent was not availble.
+Written in PHP, this script will generate real User Agent strings with optional capabilities to specify OS, Browser, Mobile, etc. simply by passing a parameter to the function called to generate the User Agent string. Created with the intentions of eliminating footprints while scraping the web for content using cURL because an easy solution to generate a truly random User Agent was not availble.
 
 __Other Randomly Generated Segments__
 * Version of Android with Device / build number strings, and variations of known UA's for specific devices.
@@ -10,12 +10,16 @@ __Other Randomly Generated Segments__
 
 It's also easy to customize with random syntax parsing and random number generating, see `Customizing User Agent` below
 ***
+# Installation 
+For installation with composer run the following command:
+```shell script
+composer require chrisspaghetti/useragentgenerator:dev-master
+```
+***
 # Usage Summary
-1. Require `useragent.php` in the file where the User Agent string will be generated.
-..*```php require_once __DIR__.'/userAgent.php';```
-2. Initialize the `userAgent` class 
+1. Initialize the `userAgent` class 
 ..*```php $agent = new userAgent;```
-3. Call the `generate` function to generate a random User Agent string as many times as needed. 
+2. Call the `generate` function to generate a random User Agent string as many times as needed. 
 ..*```php $UAString = $agent->generate();``` 
 
 ### Example Usage 
@@ -30,7 +34,7 @@ $userAgent = (new userAgent) ->generate();
 ```
 
 ### Example Usage when specifying a single OS, Browser, or Mobile
-You can specify either `firefox`, `chrome`, `mobile`, `windows`, `mac`, `iphone`, `ipad`, `ipod`, and `android`.
+You can specify either `firefox`, `chrome`, `explorer`, `mobile`, `windows`, `mac`, `iphone`, `ipad`, `ipod`, and `android`.
 ```php
 $agent = new userAgent();
 $UAFireFox = $agent->generate('firefox'); // generates a firefox user agent on either windows or mac
